@@ -64,11 +64,14 @@ function setupOnlineMode() {
     let menuHtml = '';
     const joinId = params.get('join');
 
+    // Common Close Button (Redundancy fix)
+    const closeBtnHtml = `<button id="closeOnlineMenuBtn" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: red; font-size: 1.5rem; cursor: pointer;">&times;</button>`;
+
     if (hostId) {
         // I am Host
         menuHtml = `
             <div id="onlineMenu" class="game-modal visible">
-                 <button id="closeOnlineMenuBtn" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: red; font-size: 1.5rem; cursor: pointer;">&times;</button>
+                 ${closeBtnHtml}
                 <h3>Online Lobby</h3>
                 <p>Waiting for opponent...</p>
                 <div style="margin: 1rem 0; font-size: 0.9rem; color: #666;">
@@ -82,7 +85,7 @@ function setupOnlineMode() {
         // Auto-Joining
         menuHtml = `
             <div id="onlineMenu" class="game-modal visible">
-                 <button id="closeOnlineMenuBtn" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: red; font-size: 1.5rem; cursor: pointer;">&times;</button>
+                 ${closeBtnHtml}
                 <h3>Joining Game...</h3>
                 <p>Connecting to Host...</p>
             </div>
@@ -91,7 +94,7 @@ function setupOnlineMode() {
         // Manual Joiner
         menuHtml = `
             <div id="onlineMenu" class="game-modal visible">
-                 <button id="closeOnlineMenuBtn" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: red; font-size: 1.5rem; cursor: pointer;">&times;</button>
+                 ${closeBtnHtml}
                 <h3>Join Game</h3>
                 <p>Enter Host ID:</p>
                 <input type="text" id="joinIdInput" placeholder="Friend's ID" style="padding: 5px;">

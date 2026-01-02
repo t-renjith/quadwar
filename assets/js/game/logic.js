@@ -7,7 +7,6 @@ export class GameLogic {
         this.selectedPiece = null;
         this.gameOver = false;
         this.winner = null;
-        this.lastMove = null; // {from: {r,c}, to: {r,c}}
 
         this.initBoard();
     }
@@ -121,8 +120,6 @@ export class GameLogic {
         this.board[toR][toC] = piece;
         this.board[fromR][fromC] = null;
 
-        this.lastMove = { from: { r: fromR, c: fromC }, to: { r: toR, c: toC } };
-
         // Check for Equations
         const results = this.resolveEquations(toR, toC);
 
@@ -233,10 +230,6 @@ export class GameLogic {
         // Success (D >= 0) -> Opponent pieces removed
         // Backfire (D < 0) -> Active logic (Mover) pieces removed
         // Current player is the one who just moved.
-        const mover = (this.currentPlayer === CONSTANTS.PLAYER_RED) ? CONSTANTS.PLAYER_RED : CONSTANTS.PLAYER_BLUE; // Wait, current player is switched *after* move? 
-        // Logic: checking happens *during* move processing, so 'this.currentPlayer' hasn't switched yet.
-        // Actually, I switch it at end of 'movePiece'. Let's verify usage.
-
         const victimPlayer = hasRealRoots
             ? (this.currentPlayer === CONSTANTS.PLAYER_RED ? CONSTANTS.PLAYER_BLUE : CONSTANTS.PLAYER_RED)
             : this.currentPlayer;
@@ -355,7 +348,6 @@ export class GameLogic {
         // This is expensive for full depth, so for now just 1-ply lookahead (Greedy)
 
         // We can't easily clone entire class, so we just temporarily modify state
-        const originalTo = this.board[move.to.r][move.to.c];
         const originalFrom = this.board[move.from.r][move.from.c];
 
         // Execute Move
@@ -395,7 +387,7 @@ export class GameLogic {
 
         // Rollback
         this.board[move.from.r][move.from.c] = originalFrom;
-        this.board[move.to.r][move.to.c] = originalTo; // Should be null usually
+        this.board[move.to.r][move.to.c] = null; // Should be null usually
 
         return score;
     }
