@@ -32,46 +32,25 @@ export class GameLogic {
     setupPlayer(rowQuad, rowLin, rowConst, player) {
         const terms = CONSTANTS.INITIAL_TERMS;
 
-        // For Red (Top, facing down), "Left side" is board column 7.
-        // Current array is [-4 ... 4].
-        // We want Red to have [-4] at Col 7.
-        // So Red needs [4, 3, 2, 1, -1, -2, -3, -4].
-        // Blue (Bottom, facing up) needs "Left side" at board column 0.
-        // So Blue needs [-4, -3, -2, -1, 1, 2, 3, 4].
+        // Map terms based on player orientation
+        const getTerms = (arr) => player === CONSTANTS.PLAYER_RED ? [...arr].reverse() : arr;
 
-        const quadTerms = player === CONSTANTS.PLAYER_RED ? [...terms.QUAD].reverse() : terms.QUAD;
-        const linTerms = player === CONSTANTS.PLAYER_RED ? [...terms.LIN].reverse() : terms.LIN;
-        const constTerms = player === CONSTANTS.PLAYER_RED ? [...terms.CONST].reverse() : terms.CONST;
+        const setups = [
+            { row: rowQuad, type: CONSTANTS.TYPE_QUADRATIC, values: getTerms(terms.QUAD) },
+            { row: rowLin, type: CONSTANTS.TYPE_LINEAR, values: getTerms(terms.LIN) },
+            { row: rowConst, type: CONSTANTS.TYPE_CONSTANT, values: getTerms(terms.CONST) }
+        ];
 
-        // Quadratic Row
-        for (let c = 0; c < 8; c++) {
-            this.board[rowQuad][c] = {
-                player: player,
-                type: CONSTANTS.TYPE_QUADRATIC,
-                value: quadTerms[c],
-                label: this.getLabel(quadTerms[c], CONSTANTS.TYPE_QUADRATIC)
-            };
-        }
-
-        // Linear Row
-        for (let c = 0; c < 8; c++) {
-            this.board[rowLin][c] = {
-                player: player,
-                type: CONSTANTS.TYPE_LINEAR,
-                value: linTerms[c],
-                label: this.getLabel(linTerms[c], CONSTANTS.TYPE_LINEAR)
-            };
-        }
-
-        // Constant Row
-        for (let c = 0; c < 8; c++) {
-            this.board[rowConst][c] = {
-                player: player,
-                type: CONSTANTS.TYPE_CONSTANT,
-                value: constTerms[c],
-                label: this.getLabel(constTerms[c], CONSTANTS.TYPE_CONSTANT)
-            };
-        }
+        setups.forEach(setup => {
+            for (let c = 0; c < 8; c++) {
+                this.board[setup.row][c] = {
+                    player: player,
+                    type: setup.type,
+                    value: setup.values[c],
+                    label: this.getLabel(setup.values[c], setup.type)
+                };
+            }
+        });
     }
 
     getPiece(r, c) {
@@ -175,7 +154,6 @@ export class GameLogic {
 
     resolveEquations(r, c) {
         // Check all 4 axes passing through (r,c)
-        // Horizontal (-), Vertical (|), Diag 1 (\), Diag 2 (/)
         const axes = [
             [[0, 1], [0, -1]], // Horizontal
             [[1, 0], [-1, 0]], // Vertical
@@ -187,13 +165,13 @@ export class GameLogic {
 
         for (let axis of axes) {
             const chain = this.getContiguousChain(r, c, axis);
+            // Equation needs at least 3 terms to form ax^2+bx+c=0 properly? 
+            // Original code says >= 2. Let's stick strictly to >= 2 per previous logic, 
+            // but normally you need 3 terms. But logic allows 2 terms sometimes.
             if (chain.length >= 2) {
-                // Try forming equation
                 const eqResult = this.checkPolynomial(chain);
                 if (eqResult) {
                     resolvedEvents.push(eqResult);
-                    // Defer removal to completeTurn for animation
-                    // this.removePieces(eqResult); 
                 }
             }
         }
@@ -384,13 +362,8 @@ export class GameLogic {
         this.board[move.to.r][move.to.c] = originalFrom;
         this.board[move.from.r][move.from.c] = null;
 
-        // Check Equations
-        const results = this.resolveEquations(move.to.r, move.to.c); // "Dry run" logic needed?
-        // Actually resolveEquations DOES modify board (removePieces).
-        // For simulation, we need a pure version or manual rollback.
-
-        // Let's refactor resolveEquations to NOT remove if passing a flag? 
-        // Or simpler: Just calculate score based on potential removal.
+        // Check Equations - Use resolveEquations (it's pure now, doesn't remove pieces itself)
+        const results = this.resolveEquations(move.to.r, move.to.c);
 
         let score = 0;
 
@@ -401,31 +374,23 @@ export class GameLogic {
             score += (move.from.r - move.to.r); // Moving up is good
         }
 
+
         // Equation potential
-        // We re-implement checkPolynomial logic without side effects here
-        const axes = [
-            [[0, 1], [0, -1]], [[1, 0], [-1, 0]], [[1, 1], [-1, -1]], [[1, -1], [-1, 1]]
-        ];
+        if (results.length > 0) {
+            results.forEach(eqResult => {
+                // Check if it's Good or Bad
+                const victim = eqResult.realRoots
+                    ? (this.currentPlayer === CONSTANTS.PLAYER_RED ? CONSTANTS.PLAYER_BLUE : CONSTANTS.PLAYER_RED)
+                    : this.currentPlayer;
 
-        for (let axis of axes) {
-            const chain = this.getContiguousChain(move.to.r, move.to.c, axis);
-            if (chain.length >= 3) {
-                const eqResult = this.checkPolynomial(chain);
-                if (eqResult) {
-                    // Check if it's Good or Bad
-                    const victim = eqResult.realRoots
-                        ? (this.currentPlayer === CONSTANTS.PLAYER_RED ? CONSTANTS.PLAYER_BLUE : CONSTANTS.PLAYER_RED)
-                        : this.currentPlayer;
+                const removedCount = eqResult.removed.length;
 
-                    const removedCount = eqResult.removed.length;
-
-                    if (victim !== this.currentPlayer) {
-                        score += 100 * removedCount; // GOOD!
-                    } else {
-                        score -= 200 * removedCount; // BAD! Suicide!
-                    }
+                if (victim !== this.currentPlayer) {
+                    score += 100 * removedCount; // GOOD!
+                } else {
+                    score -= 200 * removedCount; // BAD! Suicide!
                 }
-            }
+            });
         }
 
         // Rollback

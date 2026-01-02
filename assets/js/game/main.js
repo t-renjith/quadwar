@@ -143,7 +143,6 @@ function setupOnlineMode() {
 }
 
 function shouldRotateBoard() {
-    // console.log(`Rotate Check: Online=${isOnline}, MyPlayer=${myPlayer}, Red=${CONSTANTS.PLAYER_RED}`);
     return isOnline && myPlayer === CONSTANTS.PLAYER_RED;
 }
 
@@ -152,8 +151,7 @@ function handleInput(e) {
 
     // Check Turn
     if (isOnline && game.currentPlayer !== myPlayer) return;
-    // Check Turn
-    if (isOnline && game.currentPlayer !== myPlayer) return;
+
     if (gameMode === 'cpu' && game.currentPlayer !== CONSTANTS.PLAYER_BLUE) return; // Player is Blue vs CPU
 
     const rect = canvas.getBoundingClientRect();
@@ -301,11 +299,13 @@ function gameLoop() {
 function render() {
     // Clear
     // Clear & Draw Checkerboard
+    const rotate = shouldRotateBoard();
+
     for (let r = 0; r < CONSTANTS.ROWS; r++) {
         for (let c = 0; c < CONSTANTS.COLS; c++) {
             let drawR = r;
             let drawC = c;
-            if (shouldRotateBoard()) {
+            if (rotate) {
                 drawR = CONSTANTS.ROWS - 1 - r;
                 drawC = CONSTANTS.COLS - 1 - c;
             }
@@ -339,7 +339,7 @@ function render() {
 
         let drawR = r;
         let drawC = c;
-        if (shouldRotateBoard()) {
+        if (rotate) {
             drawR = CONSTANTS.ROWS - 1 - r;
             drawC = CONSTANTS.COLS - 1 - c;
         }
@@ -352,7 +352,7 @@ function render() {
         for (let m of moves) {
             let mDrawR = m.r;
             let mDrawC = m.c;
-            if (shouldRotateBoard()) {
+            if (rotate) {
                 mDrawR = CONSTANTS.ROWS - 1 - m.r;
                 mDrawC = CONSTANTS.COLS - 1 - m.c;
             }
@@ -371,7 +371,7 @@ function render() {
 
             eq.chain.forEach(item => {
                 let r = item.r, c = item.c;
-                if (shouldRotateBoard()) {
+                if (rotate) {
                     r = CONSTANTS.ROWS - 1 - r;
                     c = CONSTANTS.COLS - 1 - c;
                 }
@@ -384,7 +384,7 @@ function render() {
             // Highlight Victims (Pulsing Red)
             eq.removed.forEach(item => {
                 let r = item.r, c = item.c;
-                if (shouldRotateBoard()) {
+                if (rotate) {
                     r = CONSTANTS.ROWS - 1 - r;
                     c = CONSTANTS.COLS - 1 - c;
                 }
@@ -419,7 +419,7 @@ function render() {
             if (p) {
                 let drawR = r;
                 let drawC = c;
-                if (shouldRotateBoard()) {
+                if (rotate) {
                     drawR = CONSTANTS.ROWS - 1 - r;
                     drawC = CONSTANTS.COLS - 1 - c;
                 }
