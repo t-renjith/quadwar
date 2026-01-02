@@ -1,0 +1,108 @@
+/* Game Container */
+#game-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 2rem;
+    padding: 2rem;
+}
+
+canvas {
+    background: #1e1e2e;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    border: 1px solid #333;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 300px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    height: 600px;
+    /* Match board approx height */
+    display: flex;
+    flex-direction: column;
+}
+
+.turn-indicator {
+    text-align: center;
+    padding: 1rem;
+    background: #333;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.turn-red {
+    background: linear-gradient(45deg, #cc0000, #ff3366);
+}
+
+.turn-blue {
+    background: linear-gradient(45deg, #0066cc, #00ccff);
+}
+
+.log-panel {
+    flex: 1;
+    overflow-y: auto;
+    font-size: 0.9rem;
+    font-family: var(--font-mono);
+}
+
+.log-entry {
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.log-eq {
+    color: #ffd700;
+    font-weight: bold;
+}
+
+.log-bad {
+    color: #ff3333;
+}
+
+.actions {
+    margin-top: 1rem;
+    display: flex;
+    gap: 1rem;
+    flex-direction: column;
+}
+
+button.game-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+button.game-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Modal for Game Over / Online */
+.game-modal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #1a1a1a;
+    padding: 2rem;
+    border: 2px solid var(--accent-blue);
+    text-align: center;
+    z-index: 200;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+    display: none;
+}
+
+.game-modal.visible {
+    display: block;
+}

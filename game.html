@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quadratic War - Play</title>
+    <link rel="stylesheet" href="assets/css/landing.css"> <!-- Inherit base styles -->
+    <link rel="stylesheet" href="assets/css/game.css">
+    <!-- PeerJS for Multiplayer -->
+    <script src="https://unpkg.com/peerjs@1.5.0/dist/peerjs.min.js"></script>
+</head>
+
+<body>
+
+    <div style="padding: 1rem; position: absolute; top: 0; left: 0;">
+        <a href="index.html" style="color: #fff; text-decoration: none;">&larr; Back to Menu</a>
+    </div>
+
+    <div id="game-container">
+        <!-- Board -->
+        <div>
+            <canvas id="gameCanvas"></canvas>
+            <div id="statusMessage" style="text-align: center; margin-top: 10px; color: #aaa;"></div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div id="turnIndicator" class="turn-indicator turn-red">RED's Turn</div>
+
+            <div style="margin-bottom: 0.5rem; font-weight: bold; color: var(--accent-blue);">Equation Log</div>
+            <div id="logPanel" class="log-panel">
+                <!-- Log entries go here -->
+                <div style="color: #666; font-style: italic;">Matches will appear here...</div>
+            </div>
+
+            <div class="actions">
+                <button class="game-btn" onclick="location.reload()">Restart Game</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="assets/js/game/main.js"></script>
+</body>
+
+</html>

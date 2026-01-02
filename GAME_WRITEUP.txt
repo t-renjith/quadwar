@@ -1,0 +1,78 @@
+Quadratic War - Game Design & Rules
+
+Overview
+--------
+Quadratic War is a two-player abstract strategy game that combines algebraic expressions and positional movement on a grid. Players control pieces whose labels are algebraic terms (quadratic, linear, or constant). By arranging adjacent pieces into contiguous lines, players attempt to form polynomial expressions of the form ax^2 + bx + c = 0. If the resulting polynomial has real solutions (discriminant Δ = b^2 - 4ac ≥ 0), the opponent's pieces in that contiguous line are removed; otherwise the active player's pieces in that line are removed.
+
+Board & Setup
+-------------
+- Board: 9 rows × 8 columns (constants: BOARD_ROWS = 9, BOARD_COLS = 8, tile size 70 px).
+- Initial placement: 
+  - Player 1 (Red): Occupies rows 0, 1, 2 (Top three rows).
+  - Player 2 (Blue): Occupies rows 6, 7, 8 (Bottom three rows).
+  - The central three rows (3, 4, 5) are initially empty.
+- Term mapping: Pieces display algebraic terms determined by their starting position.
+  - Quadratic terms (x^2): values range from -4x^2 to 4x^2 across columns.
+  - Linear terms (x): values range from -4x to 4x across columns.
+  - Constant terms: values range from -4 to 4 across columns.
+  - Term selection is mirrored so opposing players have complementary columns.
+
+Piece Types & Movement
+-----------------------
+- Quadratic (ax^2): Can move up to 3 steps in any direction (cardinal or diagonal). Path must be unobstructed. Move must be strictly cardinal (row or col change only) or perfectly diagonal (equal row and col change).
+- Linear (bx): Can move up to 2 steps, strictly horizontal or vertical. No diagonal movement allowed.
+- Constant (c): Can move 1 step forward only (toward the opponent). Player 1 moves "down" (increasing row index), Player 2 moves "up" (decreasing row index).
+- General Rules: Movement cannot end on an occupied square (no capturing by displacement). Movement cannot pass through occupied squares (no jumping).
+
+Valid Moves
+-----------
+- The game validates moves based on term type, direction, range, and path clearance.
+- Invalid moves are visually blocked or ignored.
+- Only the current player's pieces can be selected and moved.
+
+Equation Detection & Resolution
+--------------------------------
+- Trigger: After a piece completes a move.
+- Detection: The game checks for contiguous chains of pieces along four axes: horizontal, vertical, and both diagonals, passing through the moved piece.
+- Chain Rule: A valid chain must contain pieces from BOTH players.
+- Polynomial Construction: Terms from all pieces in the chain are summed to form a quadratic equation: ax^2 + bx + c = 0.
+- Resolution:
+  - Discriminant D = b^2 - 4ac is calculated.
+  - Success (D ≥ 0): Real solutions exist. The OPPONENT'S pieces in the chain are removed.
+  - Backfire (D < 0): Complex solutions only. The ACTIVE PLAYER'S (mover's) pieces in the chain are removed.
+- Note: Multiple chains can be formed by a single move; all are evaluated.
+
+Win & Draw Conditions
+---------------------
+- Win: Eliminate all opponent pieces.
+  - RED WINS if Blue has 0 pieces.
+  - BLUE WINS if Red has 0 pieces.
+- Draw:
+  - No Quadratic terms remaining (impossible to form ax^2).
+  - Stalemate State: Heuristic check detects if remaining pieces (e.g. all positive quadrtaics and constants) make real solutions impossible.
+
+AI Behavior (Vs Computer)
+-------------------------
+- The AI plays as Player 1 (Red).
+- Strategy:
+  - Enumerates all valid moves.
+  - Simulates each move to check for equation formation.
+  - Scoring:
+    - High positive score for forming successful equations (removing player pieces).
+    - High negative score for backfiring equations (removing AI pieces).
+    - Slight positive score for advancing pieces forward and controlling the center.
+  - Selects the best scoring move (with random tie-breaking).
+
+Online Multiplayer
+------------------
+- Technology: Uses PeerJS for WebRTC peer-to-peer connections.
+- Roles:
+  - Host: Plays as Blue (Player 2). Starts the game. Generates a 4-letter join code.
+  - Joiner: Plays as Red (Player 1). Enters the code to connect.
+- Synchronization: Moves are sent between peers. The game trusts the client's move validation locally.
+
+Controls & UI
+-------------
+- Mouse/Touch: Click to select, click valid target to move.
+- Menus: Main Menu, Instructions, Game Over screens.
+- Mobile Support: Dedicated mobile view (`game.html`) with full-width canvas and "Back" button.
