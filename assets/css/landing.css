@@ -115,9 +115,6 @@ body {
 }
 
 .play-btn {
-    background: transparent;
-    border: 2px solid var(--accent-blue);
-    color: var(--accent-blue);
     padding: 1rem 3rem;
     font-size: 1.5rem;
     font-weight: bold;
@@ -128,13 +125,15 @@ body {
     position: relative;
     overflow: hidden;
     z-index: 1;
-    /* margin: 1rem; Removed in favor of gap */
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.8rem;
     min-width: 320px;
-    /* Standardize dimensions */
+    border-radius: 50px;
+    /* Softer, modern look */
+    text-decoration: none;
+    /* For install btn if it becomes an anchor */
 }
 
 .play-btn svg {
@@ -143,28 +142,50 @@ body {
     stroke-width: 2.5;
 }
 
-.play-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: var(--accent-blue);
-    transition: left 0.3s ease;
-    z-index: -1;
+/* Primary Button (Play) */
+.btn-primary {
+    background: linear-gradient(135deg, var(--accent-blue), #0056b3);
+    border: none;
+    color: white;
+    box-shadow: 0 4px 15px rgba(9, 132, 227, 0.4);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(9, 132, 227, 0.6);
+    color: white;
+}
+
+/* Secondary Button (Rules) */
+.btn-secondary {
+    background: transparent;
+    border: 2px solid #b2bec3;
+    color: #636e72;
+}
+
+.btn-secondary:hover {
+    border-color: #636e72;
+    background: rgba(0, 0, 0, 0.05);
+    color: #2d3436;
+    transform: translateY(-2px);
+}
+
+/* Success Button (Install) */
+.btn-success {
+    background: linear-gradient(135deg, #00b894, #00cec9);
+    border: none;
+    color: white;
+    box-shadow: 0 4px 15px rgba(0, 184, 148, 0.4);
+}
+
+.btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 184, 148, 0.6);
+    color: white;
 }
 
 @media (hover: hover) {
-    .play-btn:hover {
-        color: #fff;
-        box-shadow: 0 5px 15px rgba(9, 132, 227, 0.4);
-        transform: scale(1.05);
-    }
-
-    .play-btn:hover::before {
-        left: 0;
-    }
+    /* Removing the specific hover media query block as we defined hover states above */
 }
 
 /* Modal */
