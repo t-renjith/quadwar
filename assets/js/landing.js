@@ -5,8 +5,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const modeButtons = document.querySelectorAll('.mode-btn');
 
     // Open Modal
-    playBtn.addEventListener('click', () => {
-        modalOverlay.classList.add('active');
+    playBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        // Add small delay to prevent ghost clicks on mobile (tap passing through to buttons below)
+        setTimeout(() => {
+            modalOverlay.classList.add('active');
+        }, 100);
     });
 
     // Close Modal on clicking outside
@@ -35,18 +39,18 @@ document.addEventListener('DOMContentLoaded', () => {
 function createBackgroundElements() {
     const equations = ['x² - 4 = 0', '2x + 1 = 5', 'y = mx + b', 'Δ = b² - 4ac', 'f(x)', 'x → ∞'];
     const container = document.body;
-    
-    for(let i = 0; i < 15; i++) {
+
+    for (let i = 0; i < 15; i++) {
         const el = document.createElement('div');
         el.className = 'equation-bg';
         el.textContent = equations[Math.floor(Math.random() * equations.length)];
-        
+
         // Random position
         el.style.left = `${Math.random() * 100}vw`;
         el.style.top = `${Math.random() * 100}vh`;
         el.style.opacity = Math.random() * 0.1;
         el.style.transform = `rotate(${Math.random() * 40 - 20}deg)`;
-        
+
         container.appendChild(el);
     }
 }

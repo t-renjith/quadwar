@@ -1,8 +1,19 @@
 /* Board Wrapper - Attached Layout */
+
+/* Override landing.css body hidden */
+body {
+    overflow-y: auto;
+    height: auto;
+    min-height: 100vh;
+}
+
 #board-wrapper {
     display: flex;
     flex-direction: column;
     width: fit-content;
+    max-width: 100%;
+    /* Ensure it fits on mobile */
+    box-sizing: border-box;
 }
 
 .board-top-bar {
@@ -201,19 +212,26 @@ button.game-btn:hover {
     #game-container {
         flex-direction: column;
         align-items: center;
-        padding: 0.5rem;
-        gap: 1rem;
+        padding: 1rem 0.5rem;
+        /* Reduced padding */
+        gap: 1.5rem;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     canvas {
         max-width: 100%;
         height: auto;
+        /* Ensure touch actions work well */
+        touch-action: none;
     }
 
     .sidebar {
         width: 100%;
         height: auto;
         max-width: 100%;
+        /* Limit height on mobile so it doesn't take forever to scroll */
+        max-height: 400px;
     }
 
     .log-panel {
