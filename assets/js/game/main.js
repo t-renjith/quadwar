@@ -53,47 +53,65 @@ function startLocalGame() {
 
 function setupOnlineMode() {
     isOnline = true;
+    const params = new URLSearchParams(window.location.search);
+    const hostId = params.get('host'); // If I am host
+
     headerTitle.textContent = "Connecting...";
-    turnBar.textContent = "Waiting for Online Menu...";
+    turnBar.textContent = "Waiting for connection...";
     network = new NetworkManager();
 
     // Show Online Menu
-    const menuHtml = `
-        <div id="onlineMenu" class="game-modal visible">
-            <button id="closeOnlineMenuBtn" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: red; font-size: 1.5rem; cursor: pointer;">&times;</button>
-            <h3>Online Multiplayer</h3>
-            <p>Share your ID</p>
-            <div id="myIdContainer">Connecting...</div>
-            <button id="copyLinkBtn" class="game-btn" style="margin: 5px 0; font-size:0.8rem;">Copy ID</button>
-            <br><br>
-            <p>Or join a friend:</p>
-            <input type="text" id="joinIdInput" placeholder="Friend's ID" style="padding: 5px;">
-            <button id="joinBtn" class="game-btn">Join</button>
-        </div>
-    `;
+    let menuHtml = '';
+    const joinId = params.get('join');
+
+    if (hostId) {
+        // I am Host
+        menuHtml = `
+            <div id="onlineMenu" class="game-modal visible">
+                 <button id="closeOnlineMenuBtn" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: red; font-size: 1.5rem; cursor: pointer;">&times;</button>
+                <h3>Online Lobby</h3>
+                <p>Waiting for opponent...</p>
+                <div style="margin: 1rem 0; font-size: 0.9rem; color: #666;">
+                    ID: <strong style="color:var(--accent-blue);">${hostId}</strong>
+                </div>
+                <div style="font-size: 0.8rem; color: green; font-weight: bold;">Link Copied to Clipboard!</div>
+                <p style="font-size: 0.8rem; margin-top: 0.5rem;">Share with friend to join.</p>
+            </div>
+        `;
+    } else if (joinId) {
+        // Auto-Joining
+        menuHtml = `
+            <div id="onlineMenu" class="game-modal visible">
+                 <button id="closeOnlineMenuBtn" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: red; font-size: 1.5rem; cursor: pointer;">&times;</button>
+                <h3>Joining Game...</h3>
+                <p>Connecting to Host...</p>
+            </div>
+        `;
+    } else {
+        // Manual Joiner
+        menuHtml = `
+            <div id="onlineMenu" class="game-modal visible">
+                 <button id="closeOnlineMenuBtn" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: red; font-size: 1.5rem; cursor: pointer;">&times;</button>
+                <h3>Join Game</h3>
+                <p>Enter Host ID:</p>
+                <input type="text" id="joinIdInput" placeholder="Friend's ID" style="padding: 5px;">
+                <button id="joinBtn" class="game-btn">Join</button>
+            </div>
+        `;
+    }
+
     document.body.insertAdjacentHTML('beforeend', menuHtml);
 
-    network.init((id) => {
-        document.getElementById('myIdContainer').innerHTML = `ID: <strong style="color:var(--accent-blue); user-select: text;">${id}</strong>`;
-
-        // Setup Copy ID
-        const linkBtn = document.getElementById('copyLinkBtn');
-        if (linkBtn) {
-            linkBtn.onclick = () => {
-                navigator.clipboard.writeText(id).then(() => {
-                    linkBtn.textContent = "Copied!";
-                    setTimeout(() => linkBtn.textContent = "Copy ID", 2000);
-                });
-            };
-        }
+    // Pass hostId if present, else null
+    network.init(hostId, (id) => {
+        console.log("Network Ready. My ID:", id);
 
         // Check for Auto-Join
-        const params = new URLSearchParams(window.location.search);
-        const joinId = params.get('join');
         if (joinId) {
             console.log("Auto-joining ID:", joinId);
-            document.getElementById('joinIdInput').value = joinId;
-            document.getElementById('joinBtn').click();
+            network.connect(joinId);
+            myPlayer = CONSTANTS.PLAYER_RED; // Joiner is Red
+            headerTitle.textContent = "Joining...";
         }
 
     }, (err) => {
@@ -119,28 +137,42 @@ function setupOnlineMode() {
         updateUI();
     };
 
+    network.onDisconnect = () => {
+        alert("Opponent Disconnected! return to Menu.");
+        window.location.href = 'index.html';
+    };
+
     network.onData = (msg) => {
         if (msg.type === 'MOVE') {
             const { from, to } = msg.data;
             executeMove(from, to);
+        } else if (msg.type === 'RESTART') {
+            alert("Opponent is restarting the game.");
+            window.location.reload();
         }
     };
 
     // Join Button Logic
-    document.getElementById('joinBtn').addEventListener('click', () => {
-        const targetId = document.getElementById('joinIdInput').value.trim();
-        if (targetId) {
-            network.connect(targetId);
-            myPlayer = CONSTANTS.PLAYER_RED; // Joiner is Red
-            headerTitle.textContent = "Joining...";
-            document.getElementById('onlineMenu').remove();
-        }
-    });
+    const joinBtn = document.getElementById('joinBtn');
+    if (joinBtn) {
+        joinBtn.addEventListener('click', () => {
+            const targetId = document.getElementById('joinIdInput').value.trim();
+            if (targetId) {
+                network.connect(targetId);
+                myPlayer = CONSTANTS.PLAYER_RED; // Joiner is Red
+                headerTitle.textContent = "Joining...";
+                document.getElementById('onlineMenu').remove();
+            }
+        });
+    }
 
     // Close Button Logic
-    document.getElementById('closeOnlineMenuBtn').addEventListener('click', () => {
-        window.location.href = 'index.html';
-    });
+    const closeBtn = document.getElementById('closeOnlineMenuBtn');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+    }
 
     // If we wait, we are Host -> Blue
     // But we need to know that we are waiting.
@@ -450,3 +482,27 @@ function render() {
 
 // Start
 init();
+
+window.requestRestart = function () {
+    if (confirm("Are you sure you want to restart? Current game progress will be lost.")) {
+        if (isOnline && network) {
+            network.sendMessage('RESTART', {});
+        }
+        window.location.reload();
+    }
+};
+
+window.confirmExit = function () {
+    if (confirm("Are you sure you want to return to the menu? Current game progress will be lost.")) {
+        window.location.href = "index.html";
+    }
+};
+
+// Prevent accidental tab close/refresh
+window.addEventListener('beforeunload', (e) => {
+    // Only warn if game is active (not game over)
+    if (game && !game.gameOver) {
+        e.preventDefault();
+        e.returnValue = ''; // Required for Chrome/modern browsers
+    }
+});

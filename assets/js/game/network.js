@@ -7,12 +7,13 @@ export class NetworkManager {
 
         // Callbacks
         this.onConnect = null;
+        this.onDisconnect = null;
         this.onData = null;
         this.onError = null;
     }
 
-    init(onOpen, onError) {
-        // Create Peer with random ID
+    init(customId, onOpen, onError) {
+        // Create Peer with random ID or custom ID
         // Note: In real prod, use own TURN server. Here we use public PeerJS server.
         // We need to load PeerJS library in HTML first
         if (!window.Peer) {
@@ -21,7 +22,7 @@ export class NetworkManager {
             return;
         }
 
-        this.peer = new Peer(null, {
+        this.peer = new Peer(customId, {
             debug: 2
         });
 
@@ -73,7 +74,8 @@ export class NetworkManager {
         });
 
         this.conn.on('close', () => {
-            if (this.onError) this.onError("Connection Closed");
+            console.log("Peer Disconnected");
+            if (this.onDisconnect) this.onDisconnect();
         });
 
         this.conn.on('data', (data) => {
@@ -81,12 +83,16 @@ export class NetworkManager {
         });
     }
 
-    sendMove(move) {
+    sendMessage(type, data) {
         if (this.conn && this.conn.open) {
             this.conn.send({
-                type: 'MOVE',
-                data: move
+                type: type,
+                data: data
             });
         }
+    }
+
+    sendMove(move) {
+        this.sendMessage('MOVE', move);
     }
 }

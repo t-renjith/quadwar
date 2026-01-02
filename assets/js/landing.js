@@ -57,7 +57,29 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function navigateToGame(mode) {
-        window.location.href = `game.html?mode=${mode}`;
+        if (mode === 'online') {
+            // Generate Room ID
+            const roomId = 'qw-' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+            const joinLink = `${window.location.origin}${window.location.pathname.replace('index.html', '')}game.html?mode=online&join=${roomId}`;
+
+            // Copy to Clipboard
+            navigator.clipboard.writeText(joinLink).then(() => {
+                // Navigate as Host
+                const btn = document.querySelector('.mode-btn[data-mode="online"]');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = `<span style="color:green; font-weight:bold;">Link Copied! Joining...</span>`;
+
+                setTimeout(() => {
+                    window.location.href = `game.html?mode=online&host=${roomId}`;
+                }, 1000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                // Fallback navigation
+                window.location.href = `game.html?mode=online&host=${roomId}`;
+            });
+        } else {
+            window.location.href = `game.html?mode=${mode}`;
+        }
     }
 
     // Add some random floating equations for background
