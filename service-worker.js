@@ -9,6 +9,9 @@ const ASSETS_TO_CACHE = [
     './assets/js/game/logic.js',
     './assets/js/game/constants.js',
     './assets/js/game/network.js',
+    './assets/js/landing.js',
+    './assets/icons/icon-192x192.png',
+    './assets/icons/icon-512x512.png',
     './manifest.json'
 ];
 
