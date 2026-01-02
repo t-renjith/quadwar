@@ -60,7 +60,7 @@
     <script src="assets/js/landing.js"></script>
     <script>
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('service-worker.js')
+            navigator.serviceWorker.register('/quadwar/sw.js', { scope: '/quadwar/' })
                 .then(reg => console.log('SW Registered!', reg))
                 .catch(err => console.log('SW Error', err));
         }

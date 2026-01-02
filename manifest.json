@@ -1,7 +1,8 @@
 {
   "name": "Quadratic War",
   "short_name": "QuadWar",
-  "start_url": "./game.html",
+  "start_url": "/quadwar/",
+  "scope": "/quadwar/",
   "display": "standalone",
   "background_color": "#050510",
   "theme_color": "#00ccff",
