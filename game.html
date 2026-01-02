@@ -15,29 +15,39 @@
 
 <body>
 
-    <div style="padding: 1rem; position: absolute; top: 0; left: 0;">
-        <a href="index.html" style="color: #fff; text-decoration: none;">&larr; Back to Menu</a>
-    </div>
-
     <div id="game-container">
-        <!-- Board -->
-        <div>
+        <!-- Board Wrapper -->
+        <div id="board-wrapper">
+            <!-- Top Bar -->
+            <div class="board-top-bar">
+                <a href="index.html" class="icon-btn" title="Back">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                </a>
+                <div id="headerTitle" class="header-title">Quadratic War</div>
+                <button class="icon-btn" onclick="location.reload()" title="Restart">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38" />
+                    </svg>
+                </button>
+            </div>
+
             <canvas id="gameCanvas"></canvas>
-            <div id="statusMessage" style="text-align: center; margin-top: 10px; color: #aaa;"></div>
+
+            <!-- Bottom Bar (Turn) -->
+            <div id="turnBar" class="board-bottom-bar turn-red">Initializing...</div>
         </div>
 
         <!-- Sidebar -->
         <div class="sidebar">
-            <div id="turnIndicator" class="turn-indicator turn-red">RED's Turn</div>
-
             <div style="margin-bottom: 0.5rem; font-weight: bold; color: var(--accent-blue);">Equation Log</div>
             <div id="logPanel" class="log-panel">
                 <!-- Log entries go here -->
                 <div style="color: #666; font-style: italic;">Matches will appear here...</div>
-            </div>
-
-            <div class="actions">
-                <button class="game-btn" onclick="location.reload()">Restart Game</button>
             </div>
         </div>
     </div>

@@ -5,8 +5,8 @@ import { NetworkManager } from './network.js';
 // DOM Elements
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-const statusEl = document.getElementById('statusMessage');
-const turnIndicator = document.getElementById('turnIndicator');
+const headerTitle = document.getElementById('headerTitle');
+const turnBar = document.getElementById('turnBar');
 const logPanel = document.getElementById('logPanel');
 
 // State
@@ -47,21 +47,25 @@ function init() {
 }
 
 function startLocalGame() {
-    statusEl.innerHTML = `Game Started: ${gameMode.toUpperCase()}`;
+    headerTitle.textContent = `${gameMode.toUpperCase()} MODE`;
     updateUI();
 }
 
 function setupOnlineMode() {
     isOnline = true;
+    headerTitle.textContent = "Connecting...";
+    turnBar.textContent = "Waiting for Online Menu...";
     network = new NetworkManager();
 
     // Show Online Menu
     const menuHtml = `
         <div id="onlineMenu" class="game-modal visible">
             <h3>Online Multiplayer</h3>
-            <p>Share your ID or Join a friend</p>
-            <div id="myIdContainer">Connecting to server...</div>
-            <br>
+            <p>Share your ID</p>
+            <div id="myIdContainer">Connecting...</div>
+            <button id="copyLinkBtn" class="game-btn" style="margin: 5px 0; font-size:0.8rem;">Copy ID</button>
+            <br><br>
+            <p>Or join a friend:</p>
             <input type="text" id="joinIdInput" placeholder="Friend's ID" style="padding: 5px;">
             <button id="joinBtn" class="game-btn">Join</button>
         </div>
@@ -69,25 +73,49 @@ function setupOnlineMode() {
     document.body.insertAdjacentHTML('beforeend', menuHtml);
 
     network.init((id) => {
-        document.getElementById('myIdContainer').innerHTML = `My ID: <strong style="color:var(--accent-blue); user-select: text;">${id}</strong>`;
+        document.getElementById('myIdContainer').innerHTML = `ID: <strong style="color:var(--accent-blue); user-select: text;">${id}</strong>`;
+
+        // Setup Copy ID
+        const linkBtn = document.getElementById('copyLinkBtn');
+        if (linkBtn) {
+            linkBtn.onclick = () => {
+                navigator.clipboard.writeText(id).then(() => {
+                    linkBtn.textContent = "Copied!";
+                    setTimeout(() => linkBtn.textContent = "Copy ID", 2000);
+                });
+            };
+        }
+
+        // Check for Auto-Join
+        const params = new URLSearchParams(window.location.search);
+        const joinId = params.get('join');
+        if (joinId) {
+            console.log("Auto-joining ID:", joinId);
+            document.getElementById('joinIdInput').value = joinId;
+            document.getElementById('joinBtn').click();
+        }
+
+    }, (err) => {
+        headerTitle.textContent = "Online Error: " + err;
+        turnBar.textContent = "Check console for details.";
     });
 
-    network.onConnect = () => {
-        document.getElementById('onlineMenu').remove();
-        statusEl.textContent = "Connected! Game Starting...";
-        // Assign roles: If I initiated connection, I am P2 (Blue). If I hosted, I am P1 (Red).
-        // Wait, PeerJS "connection" event is on Host. "connect()" is on Joiner.
-        // Actually, let's keep it simple:
-        // Host (Peer server creator) = Blue? (Rules say Host=Blue, Joiner=Red).
-        // Let's stick to rule: "Host: Plays as Blue. Joiner: Plays as Red."
+    network.onConnect = (isHost) => {
+        const menuEl = document.getElementById('onlineMenu');
+        if (menuEl) menuEl.remove();
+        headerTitle.textContent = "Connected! Game Starting...";
 
-        // Determining who is who:
-        if (network.conn.metadata && network.conn.metadata.role) {
-            // We can pass metadata during connect
+        // Role Logic:
+        // Host (Server) = PLAYER_BLUE
+        // Client (Joiner) = PLAYER_RED
+        if (isHost) {
+            myPlayer = CONSTANTS.PLAYER_BLUE;
         } else {
-            // Simplest: The one who CALLED receive 'open' first? No.
-            // We need to know if we are the 'host' (waited) or 'client' (dialed).
+            myPlayer = CONSTANTS.PLAYER_RED;
         }
+
+        headerTitle.textContent = `ONLINE (${myPlayer === CONSTANTS.PLAYER_RED ? 'Red' : 'Blue'})`;
+        updateUI();
     };
 
     network.onData = (msg) => {
@@ -99,11 +127,11 @@ function setupOnlineMode() {
 
     // Join Button Logic
     document.getElementById('joinBtn').addEventListener('click', () => {
-        const targetId = document.getElementById('joinIdInput').value;
+        const targetId = document.getElementById('joinIdInput').value.trim();
         if (targetId) {
             network.connect(targetId);
             myPlayer = CONSTANTS.PLAYER_RED; // Joiner is Red
-            statusEl.textContent = "Joining...";
+            headerTitle.textContent = "Joining...";
             document.getElementById('onlineMenu').remove();
         }
     });
@@ -111,17 +139,12 @@ function setupOnlineMode() {
     // If we wait, we are Host -> Blue
     // But we need to know that we are waiting.
     // Let's assume if we didn't click Join, and we get a connection, we are Host.
-    network.onConnect = () => {
-        document.getElementById('onlineMenu').remove();
-        if (myPlayer === CONSTANTS.PLAYER_RED) {
-            // I submitted 'connect', so I am Red
-        } else {
-            // I accepted connection, so I am Host (Blue)
-            myPlayer = CONSTANTS.PLAYER_BLUE;
-        }
-        statusEl.textContent = `Online Game. You are ${myPlayer === CONSTANTS.PLAYER_RED ? 'RED' : 'BLUE'}`;
-        updateUI();
-    };
+
+}
+
+function shouldRotateBoard() {
+    // console.log(`Rotate Check: Online=${isOnline}, MyPlayer=${myPlayer}, Red=${CONSTANTS.PLAYER_RED}`);
+    return isOnline && myPlayer === CONSTANTS.PLAYER_RED;
 }
 
 function handleInput(e) {
@@ -140,8 +163,13 @@ function handleInput(e) {
     const x = (e.clientX - rect.left) * scaleX;
     const y = (e.clientY - rect.top) * scaleY;
 
-    const col = Math.floor(x / CONSTANTS.TILE_SIZE);
-    const row = Math.floor(y / CONSTANTS.TILE_SIZE);
+    let col = Math.floor(x / CONSTANTS.TILE_SIZE);
+    let row = Math.floor(y / CONSTANTS.TILE_SIZE);
+
+    if (shouldRotateBoard()) {
+        col = CONSTANTS.COLS - 1 - col;
+        row = CONSTANTS.ROWS - 1 - row;
+    }
 
     // Selection Logic
     if (game.selectedPiece) {
@@ -252,9 +280,17 @@ function logEvent(res) {
 }
 
 function updateUI() {
+    // Top Bar Title
+    if (isOnline) {
+        headerTitle.textContent = `ONLINE (${myPlayer === CONSTANTS.PLAYER_RED ? 'Red' : 'Blue'})`;
+    } else {
+        headerTitle.textContent = `${gameMode.toUpperCase()} MODE`;
+    }
+
+    // Turn Bar
     const isRed = game.currentPlayer === CONSTANTS.PLAYER_RED;
-    turnIndicator.textContent = `${isRed ? "RED" : "BLUE"}'s Turn`;
-    turnIndicator.className = `turn-indicator ${isRed ? 'turn-red' : 'turn-blue'}`;
+    turnBar.textContent = `${isRed ? "RED" : "BLUE"}'s Turn`;
+    turnBar.className = `board-bottom-bar ${isRed ? 'turn-red' : 'turn-blue'}`;
 }
 
 function gameLoop() {
@@ -267,9 +303,16 @@ function render() {
     // Clear & Draw Checkerboard
     for (let r = 0; r < CONSTANTS.ROWS; r++) {
         for (let c = 0; c < CONSTANTS.COLS; c++) {
+            let drawR = r;
+            let drawC = c;
+            if (shouldRotateBoard()) {
+                drawR = CONSTANTS.ROWS - 1 - r;
+                drawC = CONSTANTS.COLS - 1 - c;
+            }
+
             const isDark = (r + c) % 2 === 1;
             ctx.fillStyle = isDark ? CONSTANTS.COLOR_BOARD_DARK : CONSTANTS.COLOR_BOARD_LIGHT;
-            ctx.fillRect(c * CONSTANTS.TILE_SIZE, r * CONSTANTS.TILE_SIZE, CONSTANTS.TILE_SIZE, CONSTANTS.TILE_SIZE);
+            ctx.fillRect(drawC * CONSTANTS.TILE_SIZE, drawR * CONSTANTS.TILE_SIZE, CONSTANTS.TILE_SIZE, CONSTANTS.TILE_SIZE);
         }
     }
 
@@ -293,13 +336,27 @@ function render() {
     if (game.selectedPiece) {
         // Highlight logic
         const { r, c } = game.selectedPiece;
+
+        let drawR = r;
+        let drawC = c;
+        if (shouldRotateBoard()) {
+            drawR = CONSTANTS.ROWS - 1 - r;
+            drawC = CONSTANTS.COLS - 1 - c;
+        }
+
         ctx.fillStyle = CONSTANTS.COLOR_HIGHLIGHT;
-        ctx.fillRect(c * CONSTANTS.TILE_SIZE, r * CONSTANTS.TILE_SIZE, CONSTANTS.TILE_SIZE, CONSTANTS.TILE_SIZE);
+        ctx.fillRect(drawC * CONSTANTS.TILE_SIZE, drawR * CONSTANTS.TILE_SIZE, CONSTANTS.TILE_SIZE, CONSTANTS.TILE_SIZE);
 
         const moves = game.getValidMoves(r, c);
         ctx.fillStyle = CONSTANTS.COLOR_VALID_MOVE;
         for (let m of moves) {
-            ctx.fillRect(m.c * CONSTANTS.TILE_SIZE, m.r * CONSTANTS.TILE_SIZE, CONSTANTS.TILE_SIZE, CONSTANTS.TILE_SIZE);
+            let mDrawR = m.r;
+            let mDrawC = m.c;
+            if (shouldRotateBoard()) {
+                mDrawR = CONSTANTS.ROWS - 1 - m.r;
+                mDrawC = CONSTANTS.COLS - 1 - m.c;
+            }
+            ctx.fillRect(mDrawC * CONSTANTS.TILE_SIZE, mDrawR * CONSTANTS.TILE_SIZE, CONSTANTS.TILE_SIZE, CONSTANTS.TILE_SIZE);
         }
     }
 
@@ -313,7 +370,12 @@ function render() {
             ctx.shadowColor = '#ffd700';
 
             eq.chain.forEach(item => {
-                ctx.strokeRect(item.c * CONSTANTS.TILE_SIZE, item.r * CONSTANTS.TILE_SIZE, CONSTANTS.TILE_SIZE, CONSTANTS.TILE_SIZE);
+                let r = item.r, c = item.c;
+                if (shouldRotateBoard()) {
+                    r = CONSTANTS.ROWS - 1 - r;
+                    c = CONSTANTS.COLS - 1 - c;
+                }
+                ctx.strokeRect(c * CONSTANTS.TILE_SIZE, r * CONSTANTS.TILE_SIZE, CONSTANTS.TILE_SIZE, CONSTANTS.TILE_SIZE);
             });
 
             // Reset Shadow
@@ -321,8 +383,14 @@ function render() {
 
             // Highlight Victims (Pulsing Red)
             eq.removed.forEach(item => {
-                const x = item.c * CONSTANTS.TILE_SIZE;
-                const y = item.r * CONSTANTS.TILE_SIZE;
+                let r = item.r, c = item.c;
+                if (shouldRotateBoard()) {
+                    r = CONSTANTS.ROWS - 1 - r;
+                    c = CONSTANTS.COLS - 1 - c;
+                }
+
+                const x = c * CONSTANTS.TILE_SIZE;
+                const y = r * CONSTANTS.TILE_SIZE;
 
                 ctx.fillStyle = `rgba(255, 0, 0, ${0.3 + Math.sin(Date.now() / 100) * 0.2})`; // Pulse
                 ctx.fillRect(x, y, CONSTANTS.TILE_SIZE, CONSTANTS.TILE_SIZE);
@@ -349,8 +417,15 @@ function render() {
         for (let c = 0; c < CONSTANTS.COLS; c++) {
             const p = game.board[r][c];
             if (p) {
-                const x = c * CONSTANTS.TILE_SIZE + CONSTANTS.TILE_SIZE / 2;
-                const y = r * CONSTANTS.TILE_SIZE + CONSTANTS.TILE_SIZE / 2;
+                let drawR = r;
+                let drawC = c;
+                if (shouldRotateBoard()) {
+                    drawR = CONSTANTS.ROWS - 1 - r;
+                    drawC = CONSTANTS.COLS - 1 - c;
+                }
+
+                const x = drawC * CONSTANTS.TILE_SIZE + CONSTANTS.TILE_SIZE / 2;
+                const y = drawR * CONSTANTS.TILE_SIZE + CONSTANTS.TILE_SIZE / 2;
 
                 // Piece Circle
                 ctx.fillStyle = p.player === CONSTANTS.PLAYER_RED ? CONSTANTS.COLOR_RED : CONSTANTS.COLOR_BLUE;
