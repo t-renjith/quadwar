@@ -15,8 +15,8 @@ export const CONSTANTS = {
     COLOR_GRID: '#2a2a2a',
     COLOR_BOARD_LIGHT: '#25252a',
     COLOR_BOARD_DARK: '#16161a',
-    COLOR_RED: '#ff3366',
-    COLOR_BLUE: '#00ccff',
+    COLOR_RED: '#cc0033',
+    COLOR_BLUE: '#0066cc',
     COLOR_HIGHLIGHT: 'rgba(255, 255, 255, 0.2)',
     COLOR_VALID_MOVE: 'rgba(0, 255, 0, 0.3)',
 

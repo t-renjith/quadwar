@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quadratic War - Play</title>
+    <meta name="theme-color" content="#00ccff">
+    <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="assets/css/landing.css"> <!-- Inherit base styles -->
     <link rel="stylesheet" href="assets/css/game.css">
     <!-- PeerJS for Multiplayer -->
@@ -41,6 +43,13 @@
     </div>
 
     <script type="module" src="assets/js/game/main.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('SW Registered!', reg))
+                .catch(err => console.log('SW Error', err));
+        }
+    </script>
 </body>
 
 </html>

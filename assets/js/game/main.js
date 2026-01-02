@@ -134,8 +134,11 @@ function handleInput(e) {
     if (gameMode === 'cpu' && game.currentPlayer !== CONSTANTS.PLAYER_BLUE) return; // Player is Blue vs CPU
 
     const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
 
     const col = Math.floor(x / CONSTANTS.TILE_SIZE);
     const row = Math.floor(y / CONSTANTS.TILE_SIZE);
@@ -340,7 +343,7 @@ function render() {
     // Draw Pieces
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.font = '16px monospace'; // var(--font-mono)
+    ctx.font = 'bold 16px monospace'; // var(--font-mono)
 
     for (let r = 0; r < CONSTANTS.ROWS; r++) {
         for (let c = 0; c < CONSTANTS.COLS; c++) {
