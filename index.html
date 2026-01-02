@@ -23,6 +23,8 @@
 
         <div class="cta-container">
             <button id="playBtn" class="play-btn">PLAY GAME</button>
+            <button id="rulesBtn" class="play-btn secondary-btn">HOW TO PLAY</button>
+            <button id="installBtn" class="install-btn" style="display: none;">INSTALL APP</button>
         </div>
     </div>
 
@@ -53,6 +55,43 @@
             <div style="text-align: center; margin-top: 2rem;">
                 <span style="font-size: 0.8rem; color: #666; cursor: pointer;"
                     onclick="document.getElementById('modalOverlay').classList.remove('active')">Close</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rules Modal -->
+    <div class="modal-overlay" id="rulesModal">
+        <div class="game-modes rules-content">
+            <h2 class="modal-title">How to Play</h2>
+
+            <div class="rules-section">
+                <h3>Objective</h3>
+                <p>Form equations <strong>ax² + bx + c = 0</strong> using adjacent pieces to eliminate your opponent.
+                </p>
+            </div>
+
+            <div class="rules-section">
+                <h3>Movement</h3>
+                <ul>
+                    <li><strong>Quadratic (x²)</strong>: Moves 3 spaces (Diagonal/Straight).</li>
+                    <li><strong>Linear (x)</strong>: Moves 2 spaces (Straight only).</li>
+                    <li><strong>Constant (1)</strong>: Moves 1 space forward.</li>
+                </ul>
+            </div>
+
+            <div class="rules-section">
+                <h3>Resolution</h3>
+                <p>The discriminant <strong>Δ = b² - 4ac</strong> decides the outcome::</p>
+                <ul>
+                    <li><span class="highlight-good">Δ ≥ 0</span> (Real Roots): Destroy opponent's pieces.</li>
+                    <li><span class="highlight-bad">Δ < 0</span> (Complex Roots): Your pieces backfire and are
+                                destroyed!</li>
+                </ul>
+            </div>
+
+            <div style="text-align: center; margin-top: 2rem;">
+                <button class="play-btn small-btn" id="closeRulesBtn" style="width: auto; padding: 0.8rem 2rem;">GOT
+                    IT</button>
             </div>
         </div>
     </div>

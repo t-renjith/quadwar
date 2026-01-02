@@ -20,6 +20,34 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Rules Modal Logic
+    const rulesBtn = document.getElementById('rulesBtn');
+    const rulesModal = document.getElementById('rulesModal');
+    const closeRulesBtn = document.getElementById('closeRulesBtn');
+
+    if (rulesBtn) {
+        rulesBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            setTimeout(() => {
+                rulesModal.classList.add('active');
+            }, 100);
+        });
+    }
+
+    if (closeRulesBtn) {
+        closeRulesBtn.addEventListener('click', () => {
+            rulesModal.classList.remove('active');
+        });
+    }
+
+    if (rulesModal) {
+        rulesModal.addEventListener('click', (e) => {
+            if (e.target === rulesModal) {
+                rulesModal.classList.remove('active');
+            }
+        });
+    }
+
     // Handle Mode Selection
     modeButtons.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -34,6 +62,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Add some random floating equations for background
     createBackgroundElements();
+
+    // PWA Install Logic
+    let deferredPrompt;
+    const installBtn = document.getElementById('installBtn');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // Prevent Chrome 67 and earlier from automatically showing the prompt
+        e.preventDefault();
+        // Stash the event so it can be triggered later.
+        deferredPrompt = e;
+        // Update UI to notify the user they can add to home screen
+        installBtn.style.display = 'block';
+    });
+
+    installBtn.addEventListener('click', (e) => {
+        // Hide our user interface that shows our A2HS button
+        installBtn.style.display = 'none';
+        // Show the prompt
+        deferredPrompt.prompt();
+        // Wait for the user to respond to the prompt
+        deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('User accepted the A2HS prompt');
+            } else {
+                console.log('User dismissed the A2HS prompt');
+            }
+            deferredPrompt = null;
+        });
+    });
+
+    window.addEventListener('appinstalled', () => {
+        // Hide the app-provided install promotion
+        installBtn.style.display = 'none';
+        console.log('PWA was installed');
+    });
 });
 
 function createBackgroundElements() {
