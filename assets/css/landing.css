@@ -105,6 +105,13 @@ body {
 /* Play Button */
 .cta-container {
     position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .play-btn {
@@ -121,6 +128,19 @@ body {
     position: relative;
     overflow: hidden;
     z-index: 1;
+    /* margin: 1rem; Removed in favor of gap */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    min-width: 320px;
+    /* Standardize dimensions */
+}
+
+.play-btn svg {
+    width: 1.2em;
+    height: 1.2em;
+    stroke-width: 2.5;
 }
 
 .play-btn::before {
@@ -145,48 +165,6 @@ body {
     .play-btn:hover::before {
         left: 0;
     }
-}
-
-.install-btn {
-    display: none;
-    /* Controlled by JS, but default hidden */
-    margin: 1rem auto 0;
-    background: transparent;
-    border: 2px solid var(--accent-blue);
-    color: var(--accent-blue);
-    padding: 1rem 3rem;
-    font-size: 1.5rem;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    position: relative;
-    overflow: hidden;
-    z-index: 1;
-    text-decoration: none;
-}
-
-.install-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: var(--accent-blue);
-    transition: left 0.3s ease;
-    z-index: -1;
-}
-
-.install-btn:hover {
-    color: #fff;
-    box-shadow: 0 5px 15px rgba(9, 132, 227, 0.4);
-    transform: scale(1.05);
-}
-
-.install-btn:hover::before {
-    left: 0;
 }
 
 /* Modal */
@@ -299,43 +277,6 @@ footer {
     }
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .title {
-        font-size: 2.5rem;
-    }
-
-    .subtitle {
-        font-size: 1rem;
-    }
-
-    .game-modes {
-        padding: 2rem;
-    }
-}
-
-/* Secondary Button */
-.secondary-btn {
-    background: transparent;
-    color: var(--text-color);
-    border-color: var(--text-color);
-    /* Inherit font-size and padding from play-btn to keep height same */
-    font-size: 1.5rem;
-    padding: 1rem 2rem;
-    margin-top: 1rem;
-    margin-left: 1rem;
-}
-
-.secondary-btn:hover {
-    background: var(--text-color);
-    color: var(--bg-color);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-}
-
-.secondary-btn::before {
-    background: var(--text-color);
-}
-
 /* Rules Content */
 .rules-content {
     max-width: 600px;
@@ -382,9 +323,17 @@ footer {
     padding: 0.5rem 1.5rem;
 }
 
-@media (max-width: 600px) {
-    .secondary-btn {
-        margin-left: 0;
-        width: 100%;
+/* Responsive */
+@media (max-width: 768px) {
+    .title {
+        font-size: 2.5rem;
+    }
+
+    .subtitle {
+        font-size: 1rem;
+    }
+
+    .game-modes {
+        padding: 2rem;
     }
 }

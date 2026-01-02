@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Stash the event so it can be triggered later.
         deferredPrompt = e;
         // Update UI to notify the user they can add to home screen
-        installBtn.style.display = 'block';
+        installBtn.style.display = 'inline-flex';
     });
 
     installBtn.addEventListener('click', (e) => {
