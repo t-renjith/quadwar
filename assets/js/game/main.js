@@ -60,6 +60,7 @@ function setupOnlineMode() {
     // Show Online Menu
     const menuHtml = `
         <div id="onlineMenu" class="game-modal visible">
+            <button id="closeOnlineMenuBtn" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: red; font-size: 1.5rem; cursor: pointer;">&times;</button>
             <h3>Online Multiplayer</h3>
             <p>Share your ID</p>
             <div id="myIdContainer">Connecting...</div>
@@ -134,6 +135,11 @@ function setupOnlineMode() {
             headerTitle.textContent = "Joining...";
             document.getElementById('onlineMenu').remove();
         }
+    });
+
+    // Close Button Logic
+    document.getElementById('closeOnlineMenuBtn').addEventListener('click', () => {
+        window.location.href = 'index.html';
     });
 
     // If we wait, we are Host -> Blue
@@ -263,14 +269,15 @@ function checkCpuTurn() {
 
 function logEvent(res) {
     const isRed = game.currentPlayer === CONSTANTS.PLAYER_RED;
-    const colorStyle = isRed ? 'color: #ff3366;' : 'color: #00ccff;'; // Manual colors or vars
+    // Use the new theme colors defined in CONSTANTS
+    const colorStyle = isRed ? `color: ${CONSTANTS.COLOR_RED};` : `color: ${CONSTANTS.COLOR_BLUE};`;
 
     const div = document.createElement('div');
     div.className = 'log-entry';
     div.innerHTML = `
         <div class="log-eq" style="${colorStyle}">${res.equation}</div>
-        <div style="color: #fff;">Δ = ${res.delta} (${res.realRoots ? 'Real' : 'Complex'})</div>
-        <div class="${res.realRoots ? 'log-good' : 'log-bad'}" style="color: #fff;">
+        <div style="color: #000;">Δ = ${res.delta} (${res.realRoots ? 'Real' : 'Complex'})</div>
+        <div class="${res.realRoots ? 'log-good' : 'log-bad'}" style="color: #000;">
             ${res.realRoots ? 'BOOM! Enemy Destroyed' : 'BACKFIRE! Friendly Fire'}
         </div>
     `;

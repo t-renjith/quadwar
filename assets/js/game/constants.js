@@ -11,14 +11,14 @@ export const CONSTANTS = {
     TYPE_CONSTANT: 'const', // c
 
     // Colors
-    COLOR_BG: '#121212',
-    COLOR_GRID: '#2a2a2a',
-    COLOR_BOARD_LIGHT: '#25252a',
-    COLOR_BOARD_DARK: '#16161a',
-    COLOR_RED: '#cc0033',
-    COLOR_BLUE: '#0066cc',
-    COLOR_HIGHLIGHT: 'rgba(255, 255, 255, 0.2)',
-    COLOR_VALID_MOVE: 'rgba(0, 255, 0, 0.3)',
+    COLOR_BG: '#f0f2f5',
+    COLOR_GRID: '#b2bec3',
+    COLOR_BOARD_LIGHT: '#ffffff',
+    COLOR_BOARD_DARK: '#dfe6e9',
+    COLOR_RED: '#d63031',
+    COLOR_BLUE: '#0984e3',
+    COLOR_HIGHLIGHT: 'rgba(0, 0, 0, 0.1)',
+    COLOR_VALID_MOVE: 'rgba(0, 200, 0, 0.3)',
 
     // Initial Board Setup
     // Values are mirrored for Player 2

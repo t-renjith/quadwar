@@ -9,25 +9,24 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: linear-gradient(to bottom, #1e1e24, #141419);
+    background: #ffffff;
     padding: 0.8rem 1.2rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-bottom: 1px solid #000;
+    border: 1px solid var(--border-color);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 8px 8px 0 0;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2) inset;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
 .header-title {
-    color: #e0e0e0;
+    color: var(--text-color);
     font-size: 1.1rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 2px;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-    background: linear-gradient(135deg, #fff 0%, #aaa 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    text-shadow: none;
+    background: none;
+    -webkit-text-fill-color: initial;
+    background-clip: border-box;
 }
 
 .board-bottom-bar {
@@ -35,18 +34,19 @@
     padding: 0.8rem;
     font-weight: 600;
     letter-spacing: 1px;
-    color: #fff;
-    background: linear-gradient(to top, #1e1e24, #141419);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-color);
+    background: #ffffff;
+    border: 1px solid var(--border-color);
     border-top: none;
     border-radius: 0 0 8px 8px;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    text-shadow: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 .icon-btn {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.7);
+    background: #f1f2f6;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #636e72;
     width: 40px;
     height: 40px;
     border-radius: 12px;
@@ -66,10 +66,10 @@
 }
 
 .icon-btn:hover {
-    background: rgba(255, 255, 255, 0.15);
-    color: #fff;
-    border-color: rgba(255, 255, 255, 0.3);
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+    background: #fff;
+    color: var(--accent-blue);
+    border-color: var(--accent-blue);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     transform: translateY(-2px);
 }
 
@@ -87,20 +87,21 @@
 }
 
 canvas {
-    background: #1e1e2e;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-    border: 1px solid #333;
-    border-radius: 4px;
+    background: #fff;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    border: 1px solid #dfe6e9;
+    border-radius: 8px;
     cursor: pointer;
 }
 
 /* Sidebar */
 .sidebar {
     width: 300px;
-    background: rgba(255, 255, 255, 0.05);
+    background: #ffffff;
     padding: 1.5rem;
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
     height: 600px;
     /* Match board approx height */
     display: flex;
@@ -110,7 +111,7 @@ canvas {
 .turn-indicator {
     text-align: center;
     padding: 1rem;
-    background: #333;
+    background: #dfe6e9;
     margin-bottom: 1rem;
     border-radius: 4px;
     font-weight: bold;
@@ -118,11 +119,13 @@ canvas {
 }
 
 .turn-red {
-    background: linear-gradient(45deg, #cc0000, #ff3366);
+    background: #ff7675;
+    color: #fff;
 }
 
 .turn-blue {
-    background: linear-gradient(45deg, #0066cc, #00ccff);
+    background: #74b9ff;
+    color: #fff;
 }
 
 .log-panel {
@@ -135,11 +138,11 @@ canvas {
 .log-entry {
     margin-bottom: 0.5rem;
     padding-bottom: 0.5rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .log-eq {
-    color: #ffd700;
+    color: #d63031;
     font-weight: bold;
 }
 
@@ -155,16 +158,17 @@ canvas {
 }
 
 button.game-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #fff;
+    background: #f1f2f6;
+    border: 1px solid #dfe6e9;
+    color: #2d3436;
     padding: 0.8rem;
     cursor: pointer;
     transition: all 0.2s;
+    font-weight: 600;
 }
 
 button.game-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: #dfe6e9;
 }
 
 
@@ -176,12 +180,12 @@ button.game-btn:hover {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: #1a1a1a;
+    background: #ffffff;
     padding: 2rem;
     border: 2px solid var(--accent-blue);
     text-align: center;
     z-index: 200;
-    box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+    box-shadow: 0 10px 50px rgba(0, 0, 0, 0.2);
     display: none;
     border-radius: 8px;
     width: 90%;

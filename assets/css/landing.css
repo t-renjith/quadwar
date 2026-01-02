@@ -1,10 +1,10 @@
 :root {
-    --bg-color: #050510;
-    --text-color: #ffffff;
+    --bg-color: #f0f2f5;
+    --text-color: #2d3436;
     --accent-red: #ff3366;
-    --accent-blue: #00ccff;
-    --card-bg: rgba(255, 255, 255, 0.05);
-    --border-color: rgba(255, 255, 255, 0.1);
+    --accent-blue: #0984e3;
+    --card-bg: rgba(255, 255, 255, 0.9);
+    --border-color: rgba(0, 0, 0, 0.1);
     --font-heading: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     --font-mono: 'Courier New', Courier, monospace;
 }
@@ -34,8 +34,8 @@ body {
     width: 100%;
     height: 100%;
     background-image:
-        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
     background-size: 50px 50px;
     z-index: -1;
     perspective: 1000px;
@@ -56,7 +56,7 @@ body {
 /* Floating equations */
 .equation-bg {
     position: absolute;
-    color: rgba(255, 255, 255, 0.05);
+    color: rgba(0, 0, 0, 0.05);
     font-family: var(--font-mono);
     font-size: 2rem;
     pointer-events: none;
@@ -86,17 +86,18 @@ body {
     font-weight: 800;
     letter-spacing: -2px;
     margin-bottom: 0.5rem;
-    background: linear-gradient(135deg, var(--accent-red), #fff, var(--accent-blue));
+    display: inline-block;
+    color: transparent;
+    background: linear-gradient(135deg, var(--accent-red), #333, var(--accent-blue));
     -webkit-background-clip: text;
     background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 30px rgba(0, 204, 255, 0.3);
+    text-shadow: none;
 }
 
 .subtitle {
     font-size: 1.5rem;
-    color: rgba(255, 255, 255, 0.7);
-    font-weight: 300;
+    color: #636e72;
+    font-weight: 400;
     max-width: 600px;
     margin: 0 auto;
 }
@@ -135,8 +136,8 @@ body {
 }
 
 .play-btn:hover {
-    color: #000;
-    box-shadow: 0 0 30px var(--accent-blue);
+    color: #fff;
+    box-shadow: 0 5px 15px rgba(9, 132, 227, 0.4);
     transform: scale(1.05);
 }
 
@@ -151,7 +152,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(255, 255, 255, 0.6);
     backdrop-filter: blur(5px);
     display: flex;
     justify-content: center;
@@ -168,11 +169,11 @@ body {
 }
 
 .game-modes {
-    background: #1a1a24;
+    background: #ffffff;
     border: 1px solid var(--border-color);
     padding: 3rem;
-    border-radius: 1px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
     transform: translateY(20px);
     transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     max-width: 500px;
@@ -186,7 +187,7 @@ body {
 .modal-title {
     font-size: 1.8rem;
     margin-bottom: 2rem;
-    color: #fff;
+    color: var(--text-color);
     text-transform: uppercase;
     letter-spacing: 1px;
     border-bottom: 2px solid var(--accent-red);
@@ -199,9 +200,11 @@ body {
     width: 100%;
     padding: 1.2rem;
     margin-bottom: 1rem;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #fff;
+    padding: 1.2rem;
+    margin-bottom: 1rem;
+    background: #f8f9fa;
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
     font-size: 1.2rem;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -212,8 +215,9 @@ body {
 }
 
 .mode-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: var(--accent-red);
+    background: #fff;
+    border-color: var(--accent-blue);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
     transform: translateX(10px);
 }
 
@@ -233,7 +237,7 @@ footer {
     padding: 1rem;
     text-align: center;
     font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.3);
+    color: #636e72;
 }
 
 /* Animations */
